@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: podsync
+    env: docker
+    image: ghcr.io/mxpv/podsync:latest
+    plan: free
+
+    # Persistent storage for downloaded media
+    disk:
+      name: podsync-data
+      mountPath: /app/data
+      sizeGB: 1
+
+    # Environment variables
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: CONFIG_TOML
+        sync: false   # tells Render not to store it in GitHub
+
+    # Command to write config from env var and start Podsync
+    startCommand: |
+      echo "$CONFIG_TOML" > /app/config.toml && ./podsync --config /app/config.toml
